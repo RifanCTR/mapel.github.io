@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Mata Pelajaran</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #b0e0e6; /* biru telur asin */
+        }
+        td {
+            background-color: #b0e0e6; /* biru telur asin */
+        }
+        .highlight th {
+            background-color: #006400; /* hijau tua */
+            color: white;
+        }
+        .highlight td {
+            background-color: #90ee90; /* hijau muda */
+        }
+        .day-header {
+            background-color: #b0e0e6; /* biru telur asin */
+            font-weight: bold;
+            text-align: center;
+        }
+        .alert {
+            font-size: 18px;
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<table class="senin">
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">SENIN</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Matematika</td>
+            <td>10:36</td>
+        </tr>
+        <tr>
+            <td>KK (Pak Deni)</td>
+            <td>14:25</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="selasa">
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">SELASA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>B.INDONESIA</td>
+            <td>09:40</td>
+        </tr>
+        <tr>
+            <td>PAIB (Pak Ustad Uyun)</td>
+            <td>14:25</td>
+        </tr>
+        <tr>
+            <td>MULOK</td>
+            <td>15:35</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="rabu">
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">RABU</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>KK (Pak Yusuf)</td>
+            <td>11:50</td>
+        </tr>
+        <tr>
+            <td>PKN</td>
+            <td>14:25</td>
+        </tr>
+        <tr>
+            <td>KK (Pak Ahmad)</td>
+            <td>15:30</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="kamis">
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">KAMIS</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>KK (Pak Deni)</td>
+            <td>11:15</td>
+        </tr>
+        <tr>
+            <td>PKWU (Pak Sigit)</td>
+            <td>15:30</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="jumat">
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">JUMAT</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>M (Pak Ahmad)</td>
+            <td>09:40</td>
+        </tr>
+        <tr>
+            <td>KK (Pak Sigit)</td>
+            <td>14:25</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Tabel Jam Istirahat -->
+<table>
+    <thead>
+        <tr>
+            <th colspan="2" class="day-header">JAM ISTIRAHAT</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Istirahat 1</td>
+            <td>09:40 - 09:55</td>
+        </tr>
+        <tr>
+            <td>Istirahat 2</td>
+            <td>11:50 - 13:10</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Tabel Waktu Sekarang -->
+<table>
+    <thead>
+        <tr>
+            <th colspan="4" class="day-header">WAKTU SEKARANG</th>
+        </tr>
+    </thead>
+    <tbody id="time-table">
+        <tr>
+            <td id="current-time">--:--:--:---</td>
+            <td>07:40</td>
+            <td id="time-left">-- jam -- menit -- detik -- milidetik lagi</td>
+        </tr>
+    </tbody>
+</table>
+
+<div id="alert-message" class="alert"></div>
+
+<script>
+    // Highlight today's schedule
+    const today = new Date().getDay();
+    const days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+
+    if (today >= 1 && today <= 5) { // Only highlight weekdays (Monday to Friday)
+        const todayClass = days[today];
+        document.querySelectorAll('.' + todayClass).forEach(function(table) {
+            table.classList.add('highlight');
+        });
+    }
+
+    function updateTime() {
+        const now = new Date();
+        const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 40, 0);
+
+        // If the target time is before the current time, set it to the next day
+        if (now > targetTime) {
+            targetTime.setDate(targetTime.getDate() + 1);
+        }
+
+        const timeDiff = targetTime - now;
+        const hoursLeft = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutesLeft = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const secondsLeft = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        const millisecondsLeft = timeDiff % 1000;
+
+        const currentTimeElement = document.getElementById('current-time');
+        const timeLeftElement = document.getElementById('time-left');
+        const alertMessage = document.getElementById('alert-message');
+
+        currentTimeElement.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + ':' + now.getMilliseconds();
+        timeLeftElement.textContent = `${hoursLeft} jam ${minutesLeft} menit ${secondsLeft} detik ${millisecondsLeft} milidetik lagi`;
+
+        // Define the alert times
+        const alerts = [
+            { start: { hour: 4, minute: 0 }, end: { hour: 4, minute: 44 }, message: "⚠ SIAP SIAP UNTUK SHOLAT SUBUH !!!" },
+            { start: { hour: 11, minute: 50 }, end: { hour: 12, minute: 1 }, message: "⚠ SIAP SIAP UNTUK SHOLAT ZUHUR !!!" },
+            { start: { hour: 15, minute: 0 }, end: { hour: 15, minute: 23 }, message: "⚠ SIAP SIAP UNTUK SHOLAT ASAR !!!" },
+            { start: { hour: 17, minute: 40 }, end: { hour: 17, minute: 55 }, message: "⚠ SIAP SIAP UNTUK SHOLAT MAGRIB !!!" },
+            { start: { hour: 08, minute: 55 }, end: { hour: 19, minute: 9 }, message: "⚠ SIAP SIAP UNTUK SHOLAT ISYA !!!" }
+        ];
+
+        let alertText = "";
+        for (const alert of alerts) {
+            const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), alert.start.hour, alert.start.minute);
+            const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), alert.end.hour, alert.end.minute);
+            if (now >= startTime && now <= endTime) {
+                alertText = alert.message;
+                break;
+            }
+        }
+
+        alertMessage.textContent = alertText;
+
+        setTimeout(updateTime, 1);
+    }
+
+    updateTime();
+</script>
+
+</body>
+</html>
